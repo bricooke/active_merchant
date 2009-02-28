@@ -524,21 +524,44 @@ module ActiveMerchant #:nodoc:
       def add_arb_bank_account(xml, options)
         bank_account = options[:bank_account]
         return unless bank_account
-        xml.tag!('bankAccount') do
-          # The type of bank account used for payment of the subscription
-          xml.tag!('accountType', bank_account[:account_type])
-          # The routing number of the customer’s bank
-          xml.tag!('routingNumber', bank_account[:routing_number])
-          # The bank account number used for payment of the subscription
-          xml.tag!('accountNumber', bank_account[:account_number])
-          # The full name of the individual associated 
-          # with the bank account number
-          xml.tag!('nameOfAccount', bank_account[:name_of_account])
-          # The full name of the individual associated 
-          # with the bank account number (optional)
-          xml.tag!('bankName', bank_account[:bank_name]) if bank_account[:bank_name]
-          # The type of electronic check transaction used for the subscription
-          xml.tag!('echeckType', bank_account[:echeck_type])
+        if bank_account.is_a?(BankAccount)
+          raise StandardError, "Invalid Bank Account Type: #{bank_account.type}" unless BANK_ACCOUNT_TYPES.include?(bank_account.type.to_sym)
+          raise StandardError, "Invalid eCheck Type: #{bank_account.echeck_type}" unless ECHECK_TYPES.include?(bank_account.echeck_type.to_sym)
+        
+          xml.tag!('bankAccount') do
+            # The type of bank account
+            xml.tag!('accountType', BANK_ACCOUNT_TYPES[bank_account.type.to_sym])
+            # The routing number of the customer’s bank
+            xml.tag!('routingNumber', bank_account.routing_number)
+            # The bank account number
+            xml.tag!('accountNumber', bank_account.account_number)
+            # The full name of the individual associated 
+            # with the bank account number
+            xml.tag!('nameOnAccount', bank_account.name)
+            # The type of electronic check transaction
+            xml.tag!('echeckType', ECHECK_TYPES[bank_account.echeck_type.to_sym])
+            # The full name of the individual associated 
+            # with the bank account number (optional)
+            xml.tag!('bankName', bank_account.bank_name) if bank_account.bank_name
+          end
+        else
+          warn "[DEPRECATION] using bank account hash is deprecated.  Please use the BankAccount object instead."
+          xml.tag!('bankAccount') do
+            # The type of bank account used for payment of the subscription
+            xml.tag!('accountType', bank_account[:account_type])
+            # The routing number of the customer’s bank
+            xml.tag!('routingNumber', bank_account[:routing_number])
+            # The bank account number used for payment of the subscription
+            xml.tag!('accountNumber', bank_account[:account_number])
+            # The full name of the individual associated 
+            # with the bank account number
+            xml.tag!('nameOfAccount', bank_account[:name_of_account])
+            # The full name of the individual associated 
+            # with the bank account number (optional)
+            xml.tag!('bankName', bank_account[:bank_name]) if bank_account[:bank_name]
+            # The type of electronic check transaction used for the subscription
+            xml.tag!('echeckType', bank_account[:echeck_type])
+          end
         end
       end
 

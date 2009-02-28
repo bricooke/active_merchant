@@ -8,6 +8,7 @@ class AuthorizeNetCimTest < Test::Unit::TestCase
     @gateway = AuthorizeNetCimGateway.new(fixtures(:authorize_net))
     @amount = 100
     @credit_card = credit_card('4242424242424242')
+    @bank_account = bank_account
     @payment = {
       :credit_card => @credit_card
     }
@@ -38,7 +39,7 @@ class AuthorizeNetCimTest < Test::Unit::TestCase
       :profile => @profile
     }
   end
-
+  
   def teardown
     if @customer_profile_id
       assert response = @gateway.delete_customer_profile(:customer_profile_id => @customer_profile_id)
@@ -200,6 +201,38 @@ class AuthorizeNetCimTest < Test::Unit::TestCase
             :routing_number => '123456789',
             :account_number => '12345'
           }
+        },
+        :drivers_license => {
+          :state => 'MD',
+          :number => '12345',
+          :date_of_birth => '1981-3-31'
+        },
+        :tax_id => '123456789'
+      }
+    )
+
+    assert response.test?
+    assert_success response
+    assert_nil response.authorization
+    assert customer_payment_profile_id = response.params['customer_payment_profile_id']
+    assert customer_payment_profile_id =~ /\d+/, "The customerPaymentProfileId should be numeric. It was #{customer_payment_profile_id}"
+  end
+  
+  def test_successful_create_customer_payment_profile_request_with_bank_account_object
+    payment_profile = @options[:profile].delete(:payment_profiles)
+    assert response = @gateway.create_customer_profile(@options)
+    @customer_profile_id = response.authorization
+
+    assert response = @gateway.get_customer_profile(:customer_profile_id => @customer_profile_id)
+    assert_nil response.params['profile']['payment_profiles']
+
+    assert response = @gateway.create_customer_payment_profile(
+      :customer_profile_id => @customer_profile_id,
+      :payment_profile => {
+        :customer_type => 'individual', # Optional
+        :bill_to => @address,
+        :payment => {
+          :bank_account => @bank_account
         },
         :drivers_license => {
           :state => 'MD',

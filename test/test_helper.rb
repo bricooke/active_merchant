@@ -134,7 +134,21 @@ module Test
 
         CreditCard.new(defaults)
       end
-      
+
+      def bank_account(options = {})
+        defaults = {
+         :bank_name      => 'Bank of America',
+         :account_number => '11223344',
+         :routing_number => '111000025',
+         :first_name     => 'Josh',
+         :last_name      => 'Martin',
+         :type           => 'checking',
+         :echeck_type    => 'ccd'
+        }.update(options)
+        
+        BankAccount.new(defaults)
+      end
+
       def check(options = {})
         defaults = {
           :name => 'Jim Smith',

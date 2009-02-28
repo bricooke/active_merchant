@@ -67,6 +67,9 @@ require 'active_merchant/billing/credit_card_methods'
 require 'active_merchant/billing/credit_card_formatting'
 require 'active_merchant/billing/credit_card'
 
+# BankAccount Utility class.
+require 'active_merchant/billing/bank_account'
+
 require 'active_merchant/billing/base'
 
 # Require the supported gateways

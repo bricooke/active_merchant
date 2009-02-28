@@ -8,6 +8,7 @@ class AuthorizeNetCimTest < Test::Unit::TestCase
     )
     @amount = 100
     @credit_card = credit_card
+    @bank_account = bank_account
     @address = address
     @customer_profile_id = '3187'
     @customer_payment_profile_id = '7813'
@@ -67,6 +68,26 @@ class AuthorizeNetCimTest < Test::Unit::TestCase
         :customer_type => 'individual',
         :bill_to => @address,
         :payment => @payment
+      },
+      :validation_mode => :test
+    )
+    assert_instance_of Response, response
+    assert_success response
+    assert_equal @customer_payment_profile_id, response.params['customer_payment_profile_id']
+    assert_equal "This output is only present if the ValidationMode input parameter is passed with a value of testMode or liveMode", response.params['validation_direct_response']
+  end
+  
+  def test_should_create_customer_payment_profile_with_bank_account_request
+    @gateway.expects(:ssl_post).returns(successful_create_customer_payment_profile_response)
+
+    assert response = @gateway.create_customer_payment_profile(
+      :customer_profile_id => @customer_profile_id,
+      :payment_profile => {
+        :customer_type => 'individual',
+        :bill_to => @address,
+        :payment => {
+          :bank_account => @bank_account
+        }
       },
       :validation_mode => :test
     )

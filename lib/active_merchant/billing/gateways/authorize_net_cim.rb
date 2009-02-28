@@ -590,24 +590,48 @@ module ActiveMerchant #:nodoc:
       # Note: This element should only be included 
       # when the payment method is bank account.
       def add_bank_account(xml, bank_account)
-        raise StandardError, "Invalid Bank Account Type: #{bank_account[:account_type]}" unless BANK_ACCOUNT_TYPES.include?(bank_account[:account_type])
-        raise StandardError, "Invalid eCheck Type: #{bank_account[:echeck_type]}" unless ECHECK_TYPES.include?(bank_account[:echeck_type])
+        if bank_account.is_a?(BankAccount)
+          raise StandardError, "Invalid Bank Account Type: #{bank_account.type}" unless BANK_ACCOUNT_TYPES.include?(bank_account.type.to_sym)
+          raise StandardError, "Invalid eCheck Type: #{bank_account.echeck_type}" unless ECHECK_TYPES.include?(bank_account.echeck_type.to_sym)
         
-        xml.tag!('bankAccount') do
-          # The type of bank account
-          xml.tag!('accountType', BANK_ACCOUNT_TYPES[bank_account[:account_type]])
-          # The routing number of the customer’s bank
-          xml.tag!('routingNumber', bank_account[:routing_number])
-          # The bank account number
-          xml.tag!('accountNumber', bank_account[:account_number])
-          # The full name of the individual associated 
-          # with the bank account number
-          xml.tag!('nameOnAccount', bank_account[:name_on_account])
-          # The type of electronic check transaction
-          xml.tag!('echeckType', ECHECK_TYPES[bank_account[:echeck_type]])
-          # The full name of the individual associated 
-          # with the bank account number (optional)
-          xml.tag!('bankName', bank_account[:bank_name]) if bank_account[:bank_name]
+          xml.tag!('bankAccount') do
+            # The type of bank account
+            xml.tag!('accountType', BANK_ACCOUNT_TYPES[bank_account.type.to_sym])
+            # The routing number of the customer’s bank
+            xml.tag!('routingNumber', bank_account.routing_number)
+            # The bank account number
+            xml.tag!('accountNumber', bank_account.account_number)
+            # The full name of the individual associated 
+            # with the bank account number
+            xml.tag!('nameOnAccount', bank_account.name)
+            # The type of electronic check transaction
+            xml.tag!('echeckType', ECHECK_TYPES[bank_account.echeck_type.to_sym])
+            # The full name of the individual associated 
+            # with the bank account number (optional)
+            xml.tag!('bankName', bank_account.bank_name) if bank_account.bank_name
+          end
+        else
+          # This is the deprecated hash interface for backwards compatibility which will be removed eventually.
+          warn "[DEPRECATION] using bank account hash is deprecated.  Please use the BankAccount object instead."
+          raise StandardError, "Invalid Bank Account Type: #{bank_account[:account_type]}" unless BANK_ACCOUNT_TYPES.include?(bank_account[:account_type])
+          raise StandardError, "Invalid eCheck Type: #{bank_account[:echeck_type]}" unless ECHECK_TYPES.include?(bank_account[:echeck_type])
+        
+          xml.tag!('bankAccount') do
+            # The type of bank account
+            xml.tag!('accountType', BANK_ACCOUNT_TYPES[bank_account[:account_type]])
+            # The routing number of the customer’s bank
+            xml.tag!('routingNumber', bank_account[:routing_number])
+            # The bank account number
+            xml.tag!('accountNumber', bank_account[:account_number])
+            # The full name of the individual associated 
+            # with the bank account number
+            xml.tag!('nameOnAccount', bank_account[:name_on_account])
+            # The type of electronic check transaction
+            xml.tag!('echeckType', ECHECK_TYPES[bank_account[:echeck_type]])
+            # The full name of the individual associated 
+            # with the bank account number (optional)
+            xml.tag!('bankName', bank_account[:bank_name]) if bank_account[:bank_name]
+          end
         end
       end
       
