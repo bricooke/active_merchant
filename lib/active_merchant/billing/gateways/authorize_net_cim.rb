@@ -699,7 +699,8 @@ module ActiveMerchant #:nodoc:
             'amount' => direct_response_fields[9],
             'invoice_number' => direct_response_fields[7],
             'order_description' => direct_response_fields[8],
-            'purchase_order_number' => direct_response_fields[36]
+            'purchase_order_number' => direct_response_fields[36],
+            'transaction_id' => direct_response_fields[6]
             # TODO fill in other fields
           }
         )
