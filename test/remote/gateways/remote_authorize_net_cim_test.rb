@@ -339,6 +339,12 @@ class AuthorizeNetCimTest < Test::Unit::TestCase
     assert response = @gateway.get_customer_profile(:customer_profile_id => @customer_profile_id)
     assert_nil response.params['profile']['ship_to_list']
   end
+  
+  def test_successful_get_customer_profile_ids_request
+    assert response = @gateway.get_customer_profile_ids
+    assert_success response
+    assert_equal response.params['ids']['numeric_string'].size, 2
+  end
 
   def test_successful_get_customer_payment_profile_request
     assert response = @gateway.create_customer_profile(@options)

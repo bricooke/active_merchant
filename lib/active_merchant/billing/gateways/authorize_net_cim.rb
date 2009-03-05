@@ -38,6 +38,7 @@ module ActiveMerchant #:nodoc:
         :create_customer_profile => 'createCustomerProfile',
         :create_customer_payment_profile => 'createCustomerPaymentProfile',
         :create_customer_shipping_address => 'createCustomerShippingAddress',
+        :get_customer_profile_ids => 'getCustomerProfileIds',
         :get_customer_profile => 'getCustomerProfile',
         :get_customer_payment_profile => 'getCustomerPaymentProfile',
         :get_customer_shipping_address => 'getCustomerShippingAddress',
@@ -184,6 +185,18 @@ module ActiveMerchant #:nodoc:
         request = build_request(:delete_customer_shipping_address, options)
         commit(:delete_customer_shipping_address, request)
       end
+
+      # Retrieves all customer profile ids.
+      #
+      # Returns a Response whose params hash contains all the ids.
+      #
+      # ==== Options
+      #
+      def get_customer_profile_ids
+        request = build_request(:get_customer_profile_ids)
+        commit(:get_customer_profile_ids, request)
+      end
+
 
       # Retrieves an existing customer profile along with all the associated customer payment profiles and customer shipping addresses.
       #
@@ -410,6 +423,10 @@ module ActiveMerchant #:nodoc:
       def build_delete_customer_shipping_address_request(xml, options)
         xml.tag!('customerProfileId', options[:customer_profile_id])
         xml.tag!('customerAddressId', options[:customer_address_id])
+        xml.target!
+      end
+
+      def build_get_customer_profile_ids_request(xml, options)
         xml.target!
       end
 
