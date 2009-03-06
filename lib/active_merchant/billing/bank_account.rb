@@ -114,7 +114,7 @@ module ActiveMerchant #:nodoc:
       end
       
       def validate_echeck_type #:nodoc:
-        errors.add :echeck_type, "is invalid" unless ['ccd','ppd'].include?(echeck_type)
+        errors.add :echeck_type, "is invalid" unless echeck_type.nil? || ['ccd','ppd'].include?(echeck_type)
       end
 
       # Routing numbers may be validated by calculating a checksum and dividing it by 10. The
